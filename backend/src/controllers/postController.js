@@ -1,7 +1,7 @@
 import Post from '../../models/post.model.js'
 import { slugify } from '../../utils/slugify.js'
-import { toast } from 'sonner'
-import { htmlToText } from 'html-to-text'
+
+
 
 export const getAllPosts = async (req, res) => {
   try {
