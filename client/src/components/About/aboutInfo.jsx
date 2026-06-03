@@ -18,7 +18,7 @@ const AboutInfo = () => {
   return (
     <section>
       <div>
-        <img src="/assets/about.png" alt="about-image" className="w-full h-[556px] object-cover" />
+        <img src="/assets/about.png" alt="about-image" className="w-full h-139 object-cover" />
 
         <div>
           <h1 className="font-bold py-3">About Me</h1>

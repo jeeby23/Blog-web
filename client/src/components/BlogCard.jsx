@@ -4,7 +4,7 @@ export default function BlogCard({ title, description, image, date, children }) 
     <section>
       <div>
         {image && (
-          <img src={image} alt={title} className="w-[384px] h-[240px] object-cover mb-3" />
+          <img src={image} alt={title} className="w-[384px] h-60 object-cover mb-3" />
         )}
         <small className="text-[#6941C6] font-semibold">{date}</small>
         <p className="font-semibold text-xl py-3">{title}</p>

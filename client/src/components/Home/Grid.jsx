@@ -1,20 +1,35 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Grid() {
+  const [post, setPost] = useState(null)
+  const API_URL = import.meta.env.VITE_API_URL
+  const featuredId = '6a0f87222ab5991f6805f657'
+
+  useEffect(() => {
+    fetch(`${API_URL}/posts/${featuredId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPost(data)
+      })
+  }, [])
   return (
-    <section className='my-10'>
-      <div className='flex flex-col md:flex-col  lg:flex-row gap-10 items-start'>
-        <img src="/assets/climate.png" className="h-[188px] w-[770px] md:w-[552px] object-cover" />
-        <div>
-          <small className='text-[#6941C6]'>Sunday, 1 Jan 2023</small>
-          <h2 className='font-semibold text-xl py-3'>Grid system for better Design User Interface</h2>
-          <p className='text-[#667085] text-justify '>
-            A grid system is a design tool used to arrange content on a webpage. It is a series of
-            vertical and horizontal lines that create a matrix of intersecting points, which can be
-            used to align and organize page elements. Grid systems are used to create a consistent
-            look and feel across a website, and can help to make the layout more visually appealing
-            and easier to navigate 
-          </p>
-        </div>
+    <section className="my-10">
+      <div className="flex flex-col md:flex-col  lg:flex-row gap-10 items-start">
+        {post ? (
+          <div className='flex flex-col md:flex-row items-start gap-10 '>
+            <img src={post.image} className="h-47 w-192.5 md:w-138 object-cover" />
+            <div>
+              
+              <Link to={`/blog/${post.slug}`}>
+                <h2 className="font-semibold text-xl py-3">{post.title}</h2>
+              </Link>
+              <p className="text-[#667085] text-justify ">{post.description}</p>
+            </div>
+          </div>
+        ) : (
+          <p>Loading </p>
+        )}
       </div>
     </section>
   )

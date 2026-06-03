@@ -5,7 +5,7 @@ import BaseLayout from './BaseLayout'
 export default function RootLayout({ children }) {
   return (
     <div>
-      <Header />
+      <Header/>
       <BaseLayout>{children}</BaseLayout>
       <Footer/>
     </div>

@@ -1,4 +1,7 @@
 import Post from '../../models/post.model.js'
+import { slugify } from '../../utils/slugify.js'
+import { toast } from 'sonner'
+import { htmlToText } from 'html-to-text'
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -13,16 +16,25 @@ export const createPost = async (req, res) => {
   try {
     const { title, description } = req.body
     const image = req.file?.path
+    const rawContent = req.body.content || ''
 
-    const parsedContent = JSON.parse(req.body.content || '[]')
+    const content = rawContent
+
+    let slug = slugify(title)
+    const existingPost = await Post.findOne({ slug })
+    if (existingPost) {
+      slug = `${slug} - ${Date.now()}`
+    }
+
     if (!title) {
       return res.status(400).json({ message: 'Title is required' })
     }
     const newPost = new Post({
       title,
       description,
-      content: parsedContent,
+      content,
       image,
+      slug,
     })
 
     const savedPost = await newPost.save()
@@ -41,5 +53,52 @@ export const getPostById = async (req, res) => {
     res.json(post)
   } catch (error) {
     res.status(500).json({ message: error.message })
+  }
+}
+
+export const getPostBySlug = async (req, res) => {
+  const { slug } = req.params
+
+  const post = await Post.findOne({ slug })
+  if (!post) {
+    return res.status(400).json({ message: 'Post Not Found' })
+  }
+  res.json(post)
+}
+
+export const getRecentPosts = async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ _id: -1 }).limit(3)
+    res.json(posts)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params
+    const updatePost = await Post.findByIdAndUpdate(id, req.body, { new: true })
+    if (!updatePost) {
+      return res.status(404).json({ message: 'Post Not Found' })
+    }
+    res.json(updatePost)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params
+    const deletePost = await Post.findByIdAndDelete(id)
+
+    if (!deletePost) {
+      return res.status(404).json({ message: errorMessages })
+    }
+   res.json({ message: "Post deleted successfully" })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(toast.error(error.message))
   }
 }
