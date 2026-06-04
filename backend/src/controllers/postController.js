@@ -63,13 +63,19 @@ export const getPostById = async (req, res) => {
 }
 
 export const getPostBySlug = async (req, res) => {
-  const { slug } = req.params
-
-  const post = await Post.findOne({ slug })
-  if (!post) {
+  
+  try {
+    const { slug } = req.params
+    
+    const post = await Post.findOne({ slug })
+    if (!post) {
     return res.status(400).json({ message: 'Post Not Found' })
   }
   res.json(post)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+  
 }
 
 export const getRecentPosts = async (req, res) => {
@@ -100,11 +106,11 @@ export const deletePost = async (req, res) => {
     const deletePost = await Post.findByIdAndDelete(id)
 
     if (!deletePost) {
-      return res.status(404).json({ message: errorMessages })
+     return res.status(404).json({ message: 'Post Not Found' })
     }
     res.json({ message: 'Post deleted successfully' })
   } catch (error) {
     console.log(error)
-    res.status(500).json(toast.error(error.message))
+    res.status(500).json({ message: error.message })
   }
 }
