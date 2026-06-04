@@ -6,7 +6,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'blog-images',
-    allowed_format: ['jpg', 'png', 'jpeg','webp'],
+    allowed_format: ['jpg', 'png', 'jpeg', 'webp'],
   },
 })
 
