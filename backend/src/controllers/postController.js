@@ -1,5 +1,8 @@
 import Post from '../../models/post.model.js'
 import { slugify } from '../../utils/slugify.js'
+import cloudinary from "../config/cloudinary.js";
+
+import fs from "fs";
 
 
 
@@ -13,36 +16,69 @@ export const getAllPosts = async (req, res) => {
 }
 
 export const createPost = async (req, res) => {
+
   try {
-    const { title, description } = req.body
-    const image = req.file?.path
-    const rawContent = req.body.content || ''
 
-    const content = rawContent
+    const { title, description } = req.body;
 
-    let slug = slugify(title)
-    const existingPost = await Post.findOne({ slug })
-    if (existingPost) {
-      slug = `${slug} - ${Date.now()}`
-    }
+    const rawContent = req.body.content || "";
 
     if (!title) {
-      return res.status(400).json({ message: 'Title is required' })
-    }
-    const newPost = new Post({
-      title,
-      description,
-      content,
-      image,
-      slug,
-    })
 
-    const savedPost = await newPost.save()
-    res.status(201).json(savedPost)
+      return res.status(400).json({ message: "Title is required" });
+
+    }
+
+    let imageUrl = "";
+
+    // ✅ STEP 1: upload image to cloudinary
+
+    if (req.file) {
+
+      const result = await cloudinary.uploader.upload(req.file.path, {
+
+        folder: "blog-images",
+
+      });
+
+      imageUrl = result.secure_url;
+
+      // delete local file after upload
+
+      fs.unlinkSync(req.file.path);
+
+    }
+
+    // slug handling
+
+    let slug = slugify(title);
+
+    const existingPost = await Post.findOne({ slug });
+
+    if (existingPost) {
+
+      slug = `${slug}-${Date.now()}`;
+
+    }
+
+    // save post
+
+    const newPost = new Post({
+
+      title,
+
+      description,
+
+      content: rawContent,
+      image: imageUrl, 
+      slug,
+    });
+    const savedPost = await newPost.save();
+    res.status(201).json(savedPost);
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const getPostById = async (req, res) => {
   try {
