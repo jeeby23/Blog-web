@@ -63,7 +63,7 @@ const router = express.Router()
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Post'
+ *                $ref: '#/components/schemas/Post'
  */
 router.get('/', getAllPosts)
 /**
@@ -84,7 +84,7 @@ router.get('/', getAllPosts)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Post'
+ *              $ref: '#/components/schemas/Post'
  */
 router.get('/slug/:slug', getPostBySlug)
 /**
@@ -101,7 +101,7 @@ router.get('/slug/:slug', getPostBySlug)
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Post
+ *                $ref: '#/components/schemas/Post'
  */
 router.get('/recent', getRecentPosts)
 /**
@@ -123,7 +123,7 @@ router.get('/recent', getRecentPosts)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Post
+ *              $ref: '#/components/schemas/Post'
  *       404:
  *         description: Post not found
  */
