@@ -1,10 +1,7 @@
 import Post from '../../models/post.model.js'
 import { slugify } from '../../utils/slugify.js'
-import cloudinary from "../config/cloudinary.js";
-
-import fs from "fs";
-
-
+import cloudinary from '../../config/cloudinary.js'
+import fs from 'fs'
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -16,69 +13,42 @@ export const getAllPosts = async (req, res) => {
 }
 
 export const createPost = async (req, res) => {
-
   try {
-
-    const { title, description } = req.body;
-
-    const rawContent = req.body.content || "";
-
+    const { title, description } = req.body
+    const rawContent = req.body.content || ''
     if (!title) {
-
-      return res.status(400).json({ message: "Title is required" });
-
+      return res.status(400).json({ message: 'Title is required' })
     }
-
-    let imageUrl = "";
-
-    // ✅ STEP 1: upload image to cloudinary
+    let imageUrl = ''
 
     if (req.file) {
-
       const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'blog-images',
+      })
+      imageUrl = result.secure_url
 
-        folder: "blog-images",
-
-      });
-
-      imageUrl = result.secure_url;
-
-      // delete local file after upload
-
-      fs.unlinkSync(req.file.path);
-
+      fs.unlinkSync(req.file.path)
     }
 
-    // slug handling
-
-    let slug = slugify(title);
-
-    const existingPost = await Post.findOne({ slug });
-
+    let slug = slugify(title)
+    const existingPost = await Post.findOne({ slug })
     if (existingPost) {
-
-      slug = `${slug}-${Date.now()}`;
-
+      slug = `${slug}-${Date.now()}`
     }
-
-    // save post
 
     const newPost = new Post({
-
       title,
-
       description,
-
       content: rawContent,
-      image: imageUrl, 
+      image: imageUrl,
       slug,
-    });
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    })
+    const savedPost = await newPost.save()
+    res.status(201).json(savedPost)
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message })
   }
-};
+}
 
 export const getPostById = async (req, res) => {
   try {
@@ -132,7 +102,7 @@ export const deletePost = async (req, res) => {
     if (!deletePost) {
       return res.status(404).json({ message: errorMessages })
     }
-   res.json({ message: "Post deleted successfully" })
+    res.json({ message: 'Post deleted successfully' })
   } catch (error) {
     console.log(error)
     res.status(500).json(toast.error(error.message))
