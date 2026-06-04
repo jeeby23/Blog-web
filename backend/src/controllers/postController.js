@@ -66,10 +66,10 @@ export const getPostBySlug = async (req, res) => {
   
   try {
     const { slug } = req.params
-    
+
     const post = await Post.findOne({ slug })
     if (!post) {
-    return res.status(400).json({ message: 'Post Not Found' })
+    return res.status(404).json({ message: 'Post Not Found' })
   }
   res.json(post)
   } catch (error) {
