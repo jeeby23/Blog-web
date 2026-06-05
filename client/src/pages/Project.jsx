@@ -1,6 +1,6 @@
 import RootLayout from "../Layout/RootLayout"
-import Hero from "../components/project/hero"
-import ProjectCards from "../components/project/projectCards"
+import Hero from "../components/Project/hero"
+import ProjectCards from "../components/Project/projectCards"
 
 export const Project = () => {
   return (
