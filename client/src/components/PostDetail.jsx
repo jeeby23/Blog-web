@@ -15,7 +15,7 @@ const PostDetail = () => {
   useEffect(() => {
     const getPost = async () => {
       try {
-        const res = await api.get(`/posts/slug/${slug}`)
+        const res = await api.get(`/api/posts/slug/${slug}`)
         setPost(res.data)
       } catch (error) {
         console.error(error)
