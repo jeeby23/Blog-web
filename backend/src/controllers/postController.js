@@ -17,19 +17,24 @@ export const createPost = async (req, res) => {
     const { title, description } = req.body
 
     if (!title || !description) {
-      return res.status(400).json({ message: "Missing fields" })
+      return res.status(400).json({ message: 'Missing fields' })
     }
 
     let imageUrl = ''
-   if (req.file) {
-  try {
-    const result = await cloudinary.uploader.upload(req.file.path)
-    imageUrl = result.secure_url
-    fs.unlinkSync(req.file.path)
-  } catch (err) {
-    console.log("Cloudinary error:", err)
-  }
-}
+
+    if (req.file?.path) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: 'blog-images',
+        })
+
+        imageUrl = result.secure_url
+
+        fs.unlinkSync(req.file.path)
+      } catch (err) {
+        console.log('Cloudinary error:', err)
+      }
+    }
 
     let rawContent = req.body.content || ''
 
@@ -49,9 +54,8 @@ export const createPost = async (req, res) => {
     })
     const savedPost = await newPost.save()
     res.status(201).json(savedPost)
-
   } catch (error) {
-    console.log("CREATE POST ERROR:", error) 
+    console.log('CREATE POST ERROR:', error)
     res.status(500).json({ message: error.message })
   }
 }
@@ -68,19 +72,17 @@ export const getPostById = async (req, res) => {
 }
 
 export const getPostBySlug = async (req, res) => {
-  
   try {
     const { slug } = req.params
 
     const post = await Post.findOne({ slug })
     if (!post) {
-    return res.status(404).json({ message: 'Post Not Found' })
-  }
-  res.json(post)
+      return res.status(404).json({ message: 'Post Not Found' })
+    }
+    res.json(post)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
-  
 }
 
 export const getRecentPosts = async (req, res) => {
@@ -111,7 +113,7 @@ export const deletePost = async (req, res) => {
     const deletePost = await Post.findByIdAndDelete(id)
 
     if (!deletePost) {
-     return res.status(404).json({ message: 'Post Not Found' })
+      return res.status(404).json({ message: 'Post Not Found' })
     }
     res.json({ message: 'Post deleted successfully' })
   } catch (error) {
