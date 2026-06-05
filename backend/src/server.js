@@ -9,8 +9,8 @@ import about from './routes/about.route.js'
 import project from './routes/project.route.js'
 import auth from './routes/auth.route.js'
 import cookieParser from 'cookie-parser'
-import swaggerUi from "swagger-ui-express"
-import swaggerSpec from "../config/swagger.js"
+import swaggerUi from 'swagger-ui-express'
+import swaggerSpec from '../config/swagger.js'
 dotenv.config()
 
 const PORT = process.env.PORT || 5000
@@ -23,21 +23,25 @@ app.use(express.json())
 // app.use(helmet.crossOriginResourcePolicy({policy: "cross-origin"}))
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'personal-blog-websitee.netlify.app'],
     credentials: true,
-     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
 )
-app.options(/.*/, cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}))
+app.options(
+  /.*/,
+  cors({
+    origin: ['http://localhost:5173', 'personal-blog-websitee.netlify.app'],
+
+    credentials: true,
+  }),
+)
 
 app.use('/api/posts', postRoutes)
 app.use('/api/about', about)
 app.use('/api/project', project)
 app.use('/api/auth', auth)
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.listen(PORT, () => {
   connectDB()
   console.log(`server running on http://localhost:${PORT}`)
