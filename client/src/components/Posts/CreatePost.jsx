@@ -123,7 +123,7 @@ formData.append("content", form.content)
               name="image"
               id="image"
               onChange={handleChange}
-              className="border border-dashed border-gray-700 px-10 py-3 w-50 rounded-xl space-y-3"
+              className="border border-dashed border-gray-700 px-15 py-10 w-50 rounded-xl space-y-3"
             />
             <button className="border border-2-gray-300 rounded-full py-3 px-6 my-2 mx-2">
               cancel
