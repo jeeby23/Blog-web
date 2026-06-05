@@ -19,22 +19,20 @@ export const createPost = async (req, res) => {
     if (!title || !description) {
       return res.status(400).json({ message: 'Missing fields' })
     }
+let imageUrl = ''
 
-    let imageUrl = ''
+if (req.file?.path) {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'blog-images',
+    })
 
-    if (req.file?.path) {
-      try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: 'blog-images',
-        })
-
-        imageUrl = result.secure_url
-
-        fs.unlinkSync(req.file.path)
-      } catch (err) {
-        console.log('Cloudinary error:', err)
-      }
-    }
+    imageUrl = result.secure_url
+    fs.unlinkSync(req.file.path)
+  } catch (err) {
+    console.log("Cloudinary error:", err)
+  }
+}
 
     let rawContent = req.body.content || ''
 
