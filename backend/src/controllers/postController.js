@@ -21,17 +21,15 @@ export const createPost = async (req, res) => {
     }
 
     let imageUrl = ''
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'blog-images',
-      })
-
-      imageUrl = result.secure_url
-
-      fs.unlinkSync(req.file.path)
-    } else {
-      console.log("No file received")
-    }
+   if (req.file) {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path)
+    imageUrl = result.secure_url
+    fs.unlinkSync(req.file.path)
+  } catch (err) {
+    console.log("Cloudinary error:", err)
+  }
+}
 
     let rawContent = req.body.content || ''
 
