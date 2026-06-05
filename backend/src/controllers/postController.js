@@ -30,27 +30,23 @@ export const createPost = async (req, res) => {
 
     // ✅ Cloudinary upload (SAFE)
 
-    if (req.file) {
+   if (req.file) {
+  try {
+    console.log("Uploading file to Cloudinary...")
 
-      try {
+    const result = await uploadToCloudinary(req.file.buffer)
 
-        const result = await uploadToCloudinary(req.file.buffer)
+    console.log("UPLOAD SUCCESS:", result)
 
-        imageUrl = result.secure_url
-
-      } catch (err) {
-
-        console.error('Cloudinary upload error:', err)
-
-        return res.status(500).json({
-
-          message: 'Image upload failed',
-
-        })
-
-      }
-
-    }
+    imageUrl = result.secure_url
+  } catch (err) {
+    console.error("CLOUDINARY FULL ERROR:", err)
+    return res.status(500).json({
+      message: 'Image upload failed',
+      error: err.message,
+    })
+  }
+}
 
     // ✅ slug generation
 
