@@ -21,8 +21,6 @@ export const createPost = async (req, res) => {
     }
 
     let imageUrl = ''
-
-    // ✅ SAFE CHECK
     if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'blog-images',
