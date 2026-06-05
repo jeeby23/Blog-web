@@ -23,7 +23,7 @@ app.use(express.json())
 // app.use(helmet.crossOriginResourcePolicy({policy: "cross-origin"}))
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'personal-blog-websitee.netlify.app'],
+    origin: ['http://localhost:5173', 'blog-websittee.netlify.app'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
@@ -31,7 +31,7 @@ app.use(
 app.options(
   /.*/,
   cors({
-    origin: ['http://localhost:5173', 'personal-blog-websitee.netlify.app'],
+    origin: ['http://localhost:5173', 'blog-websittee.netlify.app'],
 
     credentials: true,
   }),
