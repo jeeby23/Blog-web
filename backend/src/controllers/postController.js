@@ -1,5 +1,6 @@
 import Post from '../../models/post.model.js'
 import { slugify } from '../../utils/slugify.js'
+import { uploadToCloudinary } from '../../config/cloudinaryUpload.js'
 import cloudinary from '../../config/cloudinary.js'
 import fs from 'fs'
 
