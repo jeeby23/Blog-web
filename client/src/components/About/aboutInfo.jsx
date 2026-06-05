@@ -49,7 +49,7 @@ const AboutInfo = () => {
               </ul>
 
               <h2 className="font-semibold py-3">Education:</h2>
-              <ul className="list-disc pl-5 ">
+              <ul className="list-disc pl-5.2 ">
                 {item.education
                   .split('\n')
                   .filter((educatio) => educatio.trim() !== '')
