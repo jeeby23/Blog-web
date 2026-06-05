@@ -20,9 +20,9 @@ app.use(
 app.use(morgan("dev"))
 
 
-app.use('/api/posts', postRoutes)
-app.use('/api/about', about)
-app.use('/api/project', project)
-app.use('/api/auth', authRoute)
+app.use('/posts', postRoutes)
+app.use('/about', about)
+app.use('/project', project)
+app.use('/auth', authRoute)
 
 export default app
