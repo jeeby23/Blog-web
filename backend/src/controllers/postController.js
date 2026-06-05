@@ -1,8 +1,8 @@
 import Post from '../../models/post.model.js'
 import { slugify } from '../../utils/slugify.js'
 import { uploadToCloudinary } from '../../config/cloudinaryUpload.js'
-import cloudinary from '../../config/cloudinary.js'
-import fs from 'fs'
+import { htmlToText } from 'html-to-text'
+
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -14,85 +14,50 @@ export const getAllPosts = async (req, res) => {
 }
 
 export const createPost = async (req, res) => {
-
   try {
-
-    const { title, description, content } = req.body
-
-    // ✅ validation
-
-    if (!title || !description) {
-
-      return res.status(400).json({ message: 'Title and description are required' })
-
-    }
-
+    const { title, description } = req.body
+    const rawContent = req.body.content || ''
+    
     let imageUrl = ''
 
-    // ✅ Cloudinary upload (SAFE)
-
-   if (req.file) {
-  try {
-    console.log("Uploading file to Cloudinary...")
-
-    const result = await uploadToCloudinary(req.file.buffer)
-
-    console.log("UPLOAD SUCCESS:", result)
-
-    imageUrl = result.secure_url
-  } catch (err) {
-    console.error("CLOUDINARY FULL ERROR:", err)
-    return res.status(500).json({
-      message: 'Image upload failed',
-      error: err.message,
-    })
-  }
-}
-
-    // ✅ slug generation
-
-    let slug = slugify(title)
-
-    const existing = await Post.findOne({ slug })
-
-    if (existing) {
-
-      slug = `${slug}-${Date.now()}`
-
+    // 🟢 Check if a file was uploaded via memoryStorage
+    if (req.file) {
+      try {
+        // Pass the file buffer to Cloudinary and await the response profile
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer)
+        imageUrl = cloudinaryResult.secure_url // This gives you the cloud https link
+      } catch (uploadError) {
+        return res.status(500).json({ message: 'Cloudinary upload failed', error: uploadError.message })
+      }
     }
 
-    // ✅ create post
+    // Generate plainText for clean indexing/previews while leaving content as HTML strings
+    const plainText = htmlToText(rawContent, { wordwrap: false })
+
+    let slug = slugify(title)
+    const existingPost = await Post.findOne({ slug })
+    if (existingPost) {
+      slug = `${slug}-${Date.now()}`
+    }
+
+    if (!title) {
+      return res.status(400).json({ message: 'Title is required' })
+    }
 
     const newPost = new Post({
-
       title,
-
       description,
-
-      content: content || '',
-
-      image: imageUrl,
-
+      content: rawContent, // Retains raw HTML layout containing Quill embedded assets
+      plainText,          // Stripped plain string 
+      image: imageUrl,    // Cloudinary HTTPS url saved to MongoDB
       slug,
-
     })
 
     const savedPost = await newPost.save()
-
-    return res.status(201).json(savedPost)
-
+    res.status(201).json(savedPost)
   } catch (error) {
-
-    console.error('CREATE POST ERROR:', error)
-
-    return res.status(500).json({
-
-      message: error.message,
-
-    })
-
+    res.status(500).json({ message: error.message })
   }
-
 }
 export const getPostById = async (req, res) => {
   try {
