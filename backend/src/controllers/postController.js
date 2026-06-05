@@ -15,22 +15,30 @@ export const getAllPosts = async (req, res) => {
 export const createPost = async (req, res) => {
   try {
     const { title, description } = req.body
-    const rawContent = req.body.content || ''
-    if (!title) {
-      return res.status(400).json({ message: 'Title is required' })
+
+    if (!title || !description) {
+      return res.status(400).json({ message: "Missing fields" })
     }
+
     let imageUrl = ''
 
-    if (req.file) {
+    // ✅ SAFE CHECK
+    if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'blog-images',
       })
+
       imageUrl = result.secure_url
 
       fs.unlinkSync(req.file.path)
+    } else {
+      console.log("No file received")
     }
 
+    let rawContent = req.body.content || ''
+
     let slug = slugify(title)
+
     const existingPost = await Post.findOne({ slug })
     if (existingPost) {
       slug = `${slug}-${Date.now()}`
@@ -45,11 +53,12 @@ export const createPost = async (req, res) => {
     })
     const savedPost = await newPost.save()
     res.status(201).json(savedPost)
+
   } catch (error) {
+    console.log("CREATE POST ERROR:", error) 
     res.status(500).json({ message: error.message })
   }
 }
-
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
